@@ -1,0 +1,27 @@
+{
+  "name": "blaze-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "start": "nodemon --exec babel-node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/node": "^7.25.0",
+    "@babel/preset-env": "^7.25.3",
+    "body-parser": "^1.20.2",
+    "cheerio": "^1.0.0",
+    "cherio": "^1.0.0-rc.2",
+    "chrome": "^0.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "selenium-webdriver": "^4.23.0"
+  }
+}
