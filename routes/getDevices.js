@@ -84,7 +84,7 @@ router.get("/", async (req, res) => {
 
     res.json({ data: rows });
   } catch (error) {
-    console.error("Error scraping data:");
+    console.error(error);
     res.status(404).json({ error: "get Data Error" });
   } finally {
     await driver.quit();
