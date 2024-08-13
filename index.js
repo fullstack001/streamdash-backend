@@ -26,5 +26,5 @@ app.use("/api/addDevice", addDevice);
 app.use("/api/getDevices", getDevices);
 
 app.listen(5033, () => {
-  console.log("Server running on http://localhost:5000");
+  console.log("Server running on http://localhost:5033");
 });
