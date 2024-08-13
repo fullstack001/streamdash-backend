@@ -1,16 +1,16 @@
 import { Builder, By, Key, until, Select } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import * as cheerio from "cheerio";
+import { proxy } from "../config/proxy.js";
 import express from "express";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   let options = new chrome.Options();
-  options.addArguments("--headless"); // Runs Chrome in headless mode
-  options.addArguments("--disable-gpu"); // Applicable to Windows OS only
-  options.addArguments("--no-sandbox"); // Bypass OS security model
-  options.addArguments("window-size=1920x1080"); // Set the window size
+  options.addArguments("--headless");
+  options.addArguments("--disable-gpu");
+  options.addArguments("--no-sandbox");
 
   let driver = await new Builder()
     .forBrowser("chrome")
@@ -25,30 +25,31 @@ router.get("/", async (req, res) => {
       .findElement(By.name("password"))
       .sendKeys("vrushankshah", Key.RETURN);
 
-    // Wait for the modal to appear and check if the button is interactable
-    const modalButton = await driver.wait(
+    // Wait for the modal to appear and click the 'OK' button
+    await driver.wait(
       until.elementLocated(
         By.xpath("//button[@class='btn btn-success' and @data-dismiss='modal']")
       ),
       10000 // Increased timeout
     );
-
-    // Ensure the button is visible
-    if (await modalButton.isDisplayed()) {
-      await modalButton.click();
-    } else {
-      console.error("Button not visible or interactable");
-    }
+    await driver
+      .findElement(
+        By.xpath("//button[@class='btn btn-success' and @data-dismiss='modal']")
+      )
+      .click();
 
     await driver.get("https://billing.nexatv.live/dealer/users");
 
     // Wait until the dropdown for changing page length is present
-    const selectElement = await driver.wait(
+    await driver.wait(
       until.elementLocated(By.name("memListTable_length")),
       5000 // Increased timeout
     );
 
     // Select the option with value "100"
+    const selectElement = await driver.findElement(
+      By.name("memListTable_length")
+    );
     const select = new Select(selectElement);
     await select.selectByValue("100");
 
