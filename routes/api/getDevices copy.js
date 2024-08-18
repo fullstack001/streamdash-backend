@@ -1,7 +1,7 @@
 import { Builder, By, Key, until, Select } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import * as cheerio from "cheerio";
-import { proxy } from "../config/proxy.js";
+import { proxy } from "../../config/proxy.js";
 import express from "express";
 
 const router = express.Router();

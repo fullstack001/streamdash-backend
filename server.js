@@ -1,13 +1,32 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import addDevice from "./routes/addDevice";
-import getDevices from "./routes/getDevices";
+import dotenv from "dotenv";
+
+import connectDB from "./config/database";
+import createAdmin from "./config/createAdmin";
+
+import auth from "./routes/api/auth";
+import admin from "./routes/api/admin";
+import addDevice from "./routes/api/addDevice";
+import getDevices from "./routes/api/getDevices";
+
+dotenv.config();
 
 const app = express();
+
+connectDB();
+createAdmin();
+// saveData();
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: "2000mb", extended: false }));
 app.use(cors({ origin: "*" }));
+
+app.use("/api/auth", auth);
+app.use("/api/admin", admin);
+app.use("/api/addDevice", addDevice);
+app.use("/api/getDevices", getDevices);
 
 // // Serve the form
 app.get("/", (req, res) => {
@@ -21,10 +40,7 @@ app.get("/", (req, res) => {
         </form>
     `);
 });
-
-app.use("/api/addDevice", addDevice);
-app.use("/api/getDevices", getDevices);
-
-app.listen(5033, () => {
-  console.log("Server running on http://localhost:5033");
+const port = process.env.PORT || 5033;
+app.listen(port, () => {
+  console.log(`Server is running on port:${port}`);
 });
