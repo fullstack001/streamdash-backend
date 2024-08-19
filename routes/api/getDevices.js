@@ -84,7 +84,7 @@ router.get("/", async (req, res) => {
     res.json({ data: rows });
   } catch (error) {
     console.error(error);
-    res.status(404).json({ error: "get Data Error" });
+    res.status(402).json({ error: "get Data Error" });
   } finally {
     await driver.quit();
   }

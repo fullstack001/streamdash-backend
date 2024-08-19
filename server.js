@@ -10,6 +10,7 @@ import auth from "./routes/api/auth";
 import admin from "./routes/api/admin";
 import addDevice from "./routes/api/addDevice";
 import getDevices from "./routes/api/getDevices";
+import deleteDevice from "./routes/api/deleteDevice";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api/auth", auth);
 app.use("/api/admin", admin);
 app.use("/api/addDevice", addDevice);
 app.use("/api/getDevices", getDevices);
+app.use("/api/deleteDevice", deleteDevice);
 
 // // Serve the form
 app.get("/", (req, res) => {

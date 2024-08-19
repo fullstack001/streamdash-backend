@@ -13,15 +13,13 @@ function sleep(ms) {
 
 router.post("/", async (req, res) => {
   const { name, username, password, mac } = req.body;
+  console.log(name, username, password, mac);
   // Setup WebDriver
   let options = new chrome.Options();
-  options.addArguments("--headless"); // Run in headless mode
-  options.addArguments("--disable-gpu");
-  options.addArguments("--no-sandbox");
-
-  // const randomIndex = Math.floor(Math.random() * proxy.length);
-  // const proxyAddress = proxy[randomIndex];
-  // options.addArguments(`--proxy-server=${proxyAddress}`);
+  options.addArguments("--headless"); // Runs Chrome in headless mode
+  options.addArguments("--disable-gpu"); // Applicable to Windows OS only
+  options.addArguments("--no-sandbox"); // Bypass OS security model
+  options.addArguments("window-size=1920x1080"); // Set the window size
 
   let driver = await new Builder()
     .forBrowser("chrome")
@@ -31,30 +29,25 @@ router.post("/", async (req, res) => {
   try {
     // Login to the website
     await driver.get("https://billing.nexatv.live/login");
-    await sleep(1000);
     await driver.findElement(By.name("login")).sendKeys("vrushankshah");
     await driver
       .findElement(By.name("password"))
       .sendKeys("vrushankshah", Key.RETURN);
 
-    // Wait for the modal to appear and click the 'OK' button
-    await driver.wait(
+    // Wait for the modal to appear and check if the button is interactable
+    const modalButton = await driver.wait(
       until.elementLocated(
         By.xpath("//button[@class='btn btn-success' and @data-dismiss='modal']")
       ),
-      5000
+      10000 // Increased timeout
     );
-    await driver
-      .findElement(
-        By.xpath("//button[@class='btn btn-success' and @data-dismiss='modal']")
-      )
-      .click();
 
-    // Wait for the overlay to disappear
-    await driver.wait(
-      until.stalenessOf(driver.findElement(By.css(".blockUI.blockOverlay"))),
-      5000
-    );
+    // Ensure the button is visible
+    if (await modalButton.isDisplayed()) {
+      await modalButton.click();
+    } else {
+      console.error("Button not visible or interactable");
+    }
 
     // Click the 'ADD NEW' button to navigate to the form page
     await driver
@@ -139,7 +132,7 @@ router.post("/", async (req, res) => {
     res.json({ data: rows });
   } catch (error) {
     console.error("Error:", error);
-    res.send("Failed to submit the form.");
+    res.status(402).json("Failed to submit the form.");
   } finally {
     await driver.quit();
   }
