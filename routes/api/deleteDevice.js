@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
   const { username } = req.body;
   // Setup WebDriver
   let options = new chrome.Options();
-  // options.addArguments("--headless"); // Run in headless mode
+  options.addArguments("--headless"); // Run in headless mode
   options.addArguments("--disable-gpu");
   options.addArguments("--no-sandbox");
 
