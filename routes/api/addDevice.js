@@ -3,6 +3,7 @@ import chrome from "selenium-webdriver/chrome.js";
 import * as cheerio from "cheerio";
 import { proxy } from "../../config/proxy.js";
 import express from "express";
+import fs from "fs";
 
 const router = express.Router();
 
@@ -14,9 +15,10 @@ function sleep(ms) {
 router.post("/", async (req, res) => {
   const { name, username, password, mac } = req.body;
   console.log(name, username, password, mac);
+
   // Setup WebDriver
   let options = new chrome.Options();
-  options.addArguments("--headless"); // Runs Chrome in headless mode
+  // options.addArguments("--headless"); // Runs Chrome in headless mode
   options.addArguments("--disable-gpu"); // Applicable to Windows OS only
   options.addArguments("--no-sandbox"); // Bypass OS security model
   options.addArguments("window-size=1920x1080"); // Set the window size
@@ -34,22 +36,18 @@ router.post("/", async (req, res) => {
       .findElement(By.name("password"))
       .sendKeys("vrushankshah", Key.RETURN);
 
-    sleep(5000);
+    await sleep(5000);
 
-    // Wait for the modal to appear and check if the button is interactable
+    // Wait for the modal to appear and be clickable
     const modalButton = await driver.wait(
       until.elementLocated(
         By.xpath("//button[@class='btn btn-success' and @data-dismiss='modal']")
       ),
-      10000 // Increased timeout
+      20000 // Increased timeout to 20 seconds
     );
 
-    // Ensure the button is visible
-    if (await modalButton.isDisplayed()) {
-      await modalButton.click();
-    } else {
-      console.error("Button not visible or interactable");
-    }
+    await driver.wait(until.elementIsVisible(modalButton), 20000);
+    await modalButton.click();
 
     // Click the 'ADD NEW' button to navigate to the form page
     await driver
@@ -88,14 +86,13 @@ router.post("/", async (req, res) => {
       .click();
 
     // Wait for a few seconds to ensure the form is submitted
-    await driver.sleep(50);
 
     await driver.get("https://billing.nexatv.live/dealer/users");
 
     // Wait until the dropdown for changing page length is present
     const selectElement = await driver.wait(
       until.elementLocated(By.name("memListTable_length")),
-      5000 // Increased timeout
+      10000 // Increased timeout
     );
 
     // Select the option with value "100"
@@ -107,7 +104,7 @@ router.post("/", async (req, res) => {
     // Wait until the table is refreshed and the new rows are loaded
     await driver.wait(
       until.elementLocated(By.css("#memListTable tbody tr")),
-      5000 // Increased timeout
+      10000 // Increased timeout
     );
 
     console.log("Table rows located");
@@ -134,6 +131,14 @@ router.post("/", async (req, res) => {
     res.json({ data: rows });
   } catch (error) {
     console.error("Error:", error);
+
+    // Take a screenshot for debugging purposes
+    await driver.takeScreenshot().then(function (image, err) {
+      fs.writeFile("screenshot.png", image, "base64", function (err) {
+        if (err) console.log(err);
+      });
+    });
+
     res.status(402).json("Failed to submit the form.");
   } finally {
     await driver.quit();
