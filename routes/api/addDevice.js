@@ -34,6 +34,8 @@ router.post("/", async (req, res) => {
       .findElement(By.name("password"))
       .sendKeys("vrushankshah", Key.RETURN);
 
+    sleep(5000);
+
     // Wait for the modal to appear and check if the button is interactable
     const modalButton = await driver.wait(
       until.elementLocated(
