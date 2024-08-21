@@ -5,6 +5,8 @@ import { proxy } from "../../config/proxy.js";
 import express from "express";
 import fs from "fs";
 
+import Device from "../../models/Device.js";
+
 const router = express.Router();
 
 // Sleep function
@@ -13,12 +15,10 @@ function sleep(ms) {
 }
 
 router.post("/", async (req, res) => {
-  const { name, username, password, mac } = req.body;
-  console.log(name, username, password, mac);
-
+  const { email, name, username, password, mac } = req.body;
   // Setup WebDriver
   let options = new chrome.Options();
-  options.addArguments("--headless"); // Runs Chrome in headless mode
+  // options.addArguments("--headless"); // Runs Chrome in headless mode
   options.addArguments("--disable-gpu"); // Applicable to Windows OS only
   options.addArguments("--no-sandbox"); // Bypass OS security model
   options.addArguments("window-size=1920x1080"); // Set the window size
@@ -87,6 +87,8 @@ router.post("/", async (req, res) => {
 
     // Wait for a few seconds to ensure the form is submitted
 
+    await sleep(5000);
+
     await driver.get("https://billing.nexatv.live/dealer/users");
 
     // Wait until the dropdown for changing page length is present
@@ -128,7 +130,17 @@ router.post("/", async (req, res) => {
       rows.push(row);
     });
 
-    res.json({ data: rows });
+    const device = new Device({
+      email: email,
+      mac: mac,
+      username: username,
+      password: password,
+    });
+    await device.save();
+
+    const devices = await Device.find({ email });
+
+    res.json({ data: rows, userDevices: devices });
   } catch (error) {
     console.error("Error:", error);
 

@@ -77,10 +77,14 @@ router.post("/", async (req, res) => {
 
     console.log("Table rows located");
 
-    const deleteButton = await driver.findElement(
-      By.xpath(
-        `//a[@href='https://billing.nexatv.live/dealer/users/delete/${username}']`
-      )
+    await sleep(3000);
+
+    // Adjusted XPath with a more general approach
+    const deleteButton = await driver.wait(
+      until.elementLocated(
+        By.xpath(`//a[contains(@href, '/dealer/users/delete/${username}')]`)
+      ),
+      5000 // Wait for up to 10 seconds
     );
 
     // Click the delete button
@@ -90,7 +94,7 @@ router.post("/", async (req, res) => {
     await driver.wait(until.alertIsPresent(), 5000);
     const alert = await driver.switchTo().alert();
     await alert.accept();
-
+    await sleep(2000);
     res.json("success");
   } catch (error) {
     console.error("Error:", error);

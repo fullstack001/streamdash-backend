@@ -4,8 +4,10 @@ import * as cheerio from "cheerio";
 import express from "express";
 
 const router = express.Router();
+import Device from "../../models/Device";
 
-router.get("/", async (req, res) => {
+router.post("/", async (req, res) => {
+  const { email } = req.body;
   let options = new chrome.Options();
   options.addArguments("--headless"); // Runs Chrome in headless mode
   options.addArguments("--disable-gpu"); // Applicable to Windows OS only
@@ -81,7 +83,10 @@ router.get("/", async (req, res) => {
       rows.push(row);
     });
 
-    res.json({ data: rows });
+    const userDevice = await Device.find({ email });
+    console.log(userDevice);
+
+    res.json({ data: rows, userDevice: userDevice });
   } catch (error) {
     console.error(error);
     res.status(402).json({ error: "get Data Error" });

@@ -152,11 +152,12 @@ router.post(
 
       const payload = {
         user: {
-          name: user.name,
-          id: user._id,
-          email: user.email,
-          isAdmin: user.isAdmin,
-          credit: user.credit,
+          name: newUserData.name,
+          id: newUserData._id,
+          email: newUserData.email,
+          isAdmin: newUserData.isAdmin,
+          credit: newUserData.credit,
+          following: newUserData.following,
         },
       };
 
