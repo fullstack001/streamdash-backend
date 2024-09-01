@@ -84,7 +84,6 @@ router.post("/", async (req, res) => {
     });
 
     const userDevice = await Device.find({ email });
-    console.log(userDevice);
 
     res.json({ data: rows, userDevice: userDevice });
   } catch (error) {
