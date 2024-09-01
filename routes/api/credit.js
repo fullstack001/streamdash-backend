@@ -13,7 +13,7 @@ router.post("/buy-credit", async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    user.credit = (user.credit || 0) + credit;
+    user.credit = (Number(user.credit) || 0) + Number(credit);
     await user.save();
 
     const newCredit = new Credit({
