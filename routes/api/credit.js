@@ -30,4 +30,25 @@ router.post("/buy-credit", async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const history = await Credit.find();
+    res.json(history);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "get data error" });
+  }
+});
+
+router.post("/getuserhistory", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const history = await Credit.find(email);
+    res.json(history);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "get data error" });
+  }
+});
+
 export default router;

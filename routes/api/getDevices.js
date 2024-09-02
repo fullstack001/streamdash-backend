@@ -5,6 +5,7 @@ import express from "express";
 
 const router = express.Router();
 import Device from "../../models/Device";
+import User from "../../models/User";
 
 router.post("/", async (req, res) => {
   const { email } = req.body;
@@ -83,7 +84,11 @@ router.post("/", async (req, res) => {
       rows.push(row);
     });
 
-    const userDevice = await Device.find({ email });
+    const user = await User.findOne({ email });
+
+    const userDevice = user.isAdmin
+      ? await Device.find()
+      : await Device.find({ email });
 
     res.json({ data: rows, userDevice: userDevice });
   } catch (error) {

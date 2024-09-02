@@ -65,9 +65,9 @@ router.post(
   }
 );
 
-router.get("/getUserData", auth, async (req, res) => {
+router.post("/getUserData", async (req, res) => {
   try {
-    const newUserData = await User.findById(req.user.id);
+    const newUserData = await User.findOne({ email: req.body.email });
     const payload = {
       user: {
         name: newUserData.name,
@@ -75,7 +75,6 @@ router.get("/getUserData", auth, async (req, res) => {
         email: newUserData.email,
         isAdmin: newUserData.isAdmin,
         credit: newUserData.credit,
-        following: newUserData.following,
       },
     };
 
