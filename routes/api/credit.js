@@ -42,12 +42,17 @@ router.get("/", async (req, res) => {
 
 router.post("/getuserhistory", async (req, res) => {
   const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ msg: "Email is required" });
+  }
+
   try {
-    const history = await Credit.find(email);
+    const history = await Credit.find({ email });
     res.json(history);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "get data error" });
+    console.error(error);
+    res.status(500).json({ msg: "Failed to retrieve data" });
   }
 });
 
