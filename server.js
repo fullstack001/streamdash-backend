@@ -12,6 +12,7 @@ import addDevice from "./routes/api/addDevice";
 import getDevices from "./routes/api/getDevices";
 import deleteDevice from "./routes/api/deleteDevice";
 import editDeviceData from "./routes/api/editDeviceData";
+import addCreditDevice from "./routes/api/addcreditdevice";
 import payment from "./routes/api/payment";
 import credit from "./routes/api/credit";
 
@@ -33,6 +34,7 @@ app.use("/api/addDevice", addDevice);
 app.use("/api/getDevices", getDevices);
 app.use("/api/deleteDevice", deleteDevice);
 app.use("/api/edit-device", editDeviceData);
+app.use("/api/add-credit-device", addCreditDevice);
 app.use("/api/payment", payment);
 app.use("/api/credit", credit);
 

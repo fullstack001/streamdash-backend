@@ -96,13 +96,6 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
 
-    // Take a screenshot for debugging purposes
-    await driver.takeScreenshot().then(function (image, err) {
-      fs.writeFile("screenshot.png", image, "base64", function (err) {
-        if (err) console.log(err);
-      });
-    });
-
     res.status(402).json("Failed to submit the form.");
   } finally {
     await driver.quit();

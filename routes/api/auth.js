@@ -2,8 +2,8 @@ import express from "express";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { jwtDecode } from "jwt-decode";
-import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
 import jwtSecret from "../../config/jwtSecret";
 
 import auth from "../../middleware/auth";
@@ -156,7 +156,6 @@ router.post(
           email: newUserData.email,
           isAdmin: newUserData.isAdmin,
           credit: newUserData.credit,
-          following: newUserData.following,
         },
       };
 
