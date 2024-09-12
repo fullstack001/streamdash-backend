@@ -6,6 +6,7 @@ import express from "express";
 import fs from "fs";
 
 import Device from "../../models/Device.js";
+import User from "../../models/User.js";
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ function sleep(ms) {
 }
 
 router.post("/", async (req, res) => {
-  const { email, name, username, password, mac } = req.body;
+  const { email, name, username, password, mac, credit } = req.body;
   // Setup WebDriver
   let options = new chrome.Options();
   // options.addArguments("--headless"); // Runs Chrome in headless mode
@@ -38,23 +39,9 @@ router.post("/", async (req, res) => {
 
     await sleep(5000);
 
-    // Wait for the modal to appear and be clickable
-    const modalButton = await driver.wait(
-      until.elementLocated(
-        By.xpath("//button[@class='btn btn-success' and @data-dismiss='modal']")
-      ),
-      20000 // Increased timeout to 20 seconds
-    );
-
-    await driver.wait(until.elementIsVisible(modalButton), 20000);
-    await modalButton.click();
-
-    // Click the 'ADD NEW' button to navigate to the form page
-    await driver
-      .findElement(
-        By.xpath("//a[@href='https://billing.nexatv.live/dealer/users/add']")
-      )
-      .click();
+    // Navigate to the edit page
+    await driver.get(`https://billing.nexatv.live/dealer/users/add`);
+    await sleep(5000);
 
     // Fill in the form
     await driver.findElement(By.name("name")).sendKeys(name);
@@ -76,6 +63,16 @@ router.post("/", async (req, res) => {
     }
 
     await sleep(50);
+
+    // Check if credit is not 0 and select the validity option
+    if (credit > 0) {
+      const validityElement = await driver.findElement(By.name("validity"));
+      const select = new Select(validityElement);
+
+      // Select the appropriate option based on credit value
+      // Assuming each month corresponds to one credit unit, and credit can be up to 12
+      await select.selectByValue(`${credit}`);
+    }
 
     await driver
       .findElement(
@@ -140,7 +137,30 @@ router.post("/", async (req, res) => {
 
     const devices = await Device.find({ email });
 
-    res.json({ data: rows, userDevices: devices });
+    if (credit > 0) {
+      const user = await User.findOne({ email });
+      user.credit = Number(user.credit) - Number(credit);
+      await user.save();
+      const newUser = await User.findOne({ email });
+      const payload = {
+        user: {
+          name: newUser.name,
+          id: newUser._id,
+          email: newUser.email,
+          isAdmin: newUser.isAdmin,
+          credit: newUser.credit,
+          following: newUser.following,
+          free_device: newUserData.free_device,
+        },
+      };
+
+      jwt.sign(payload, jwtSecret, { expiresIn: "1 days" }, (err, token) => {
+        if (err) throw err;
+        res.json({ token: token, data: rows });
+      });
+    } else {
+      res.json({ data: rows, userDevices: devices });
+    }
   } catch (error) {
     console.error("Error:", error);
 

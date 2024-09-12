@@ -75,6 +75,7 @@ router.post("/getUserData", async (req, res) => {
         email: newUserData.email,
         isAdmin: newUserData.isAdmin,
         credit: newUserData.credit,
+        free_device: newUserData.free_device,
       },
     };
 
@@ -104,25 +105,9 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     //Retrieve the info from post request
-    const { email, password, ref } = req.body;
-    console.log("ref", ref);
-    let followerEmail = "";
-    if (ref !== "") {
-      const followingUser = await User.findById(ref);
-      if (followingUser) {
-        const oldFollowing = followingUser.following
-          ? followingUser.following
-          : [];
-        followingUser.following = [
-          ...oldFollowing,
-          { email: email, date: Date.now(), credit: 0 },
-        ];
-        followerEmail = followingUser.email;
-        await followingUser.save();
-      }
-    }
+    const { nameUser, email, password } = req.body;
+    console.log(nameUser, email, password);
 
     try {
       //Check in the DB whether user already exists or not
@@ -134,10 +119,9 @@ router.post(
 
       // Prepare user template to be stored in DB
       user = new User({
-        name: "User",
+        name: nameUser,
         email: email,
         password: password,
-        follower: followerEmail,
       });
 
       // Encrypt the password
@@ -148,6 +132,7 @@ router.post(
       await user.save();
 
       //   res.send('User Registered');
+      const newUserData = await User.findOne({ email });
 
       const payload = {
         user: {
@@ -156,6 +141,7 @@ router.post(
           email: newUserData.email,
           isAdmin: newUserData.isAdmin,
           credit: newUserData.credit,
+          free_device:newUserData.free_device
         },
       };
 

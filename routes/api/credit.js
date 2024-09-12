@@ -14,6 +14,7 @@ router.post("/buy-credit", async (req, res) => {
     }
 
     user.credit = (Number(user.credit) || 0) + Number(credit);
+    user.free_device = 1;
     await user.save();
 
     const newCredit = new Credit({

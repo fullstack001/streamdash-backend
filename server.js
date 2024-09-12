@@ -15,6 +15,7 @@ import editDeviceData from "./routes/api/editDeviceData";
 import addCreditDevice from "./routes/api/addcreditdevice";
 import payment from "./routes/api/payment";
 import credit from "./routes/api/credit";
+import notification from "./routes/api/notification";
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use("/api/edit-device", editDeviceData);
 app.use("/api/add-credit-device", addCreditDevice);
 app.use("/api/payment", payment);
 app.use("/api/credit", credit);
+app.use("/api/notification", notification);
 
 // // Serve the form
 app.get("/", (req, res) => {

@@ -124,6 +124,7 @@ router.post("/", async (req, res) => {
         isAdmin: newUser.isAdmin,
         credit: newUser.credit,
         following: newUser.following,
+        free_device: newUserData.free_device,
       },
     };
 
