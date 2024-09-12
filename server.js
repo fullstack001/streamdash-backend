@@ -27,7 +27,7 @@ createAdmin();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: "2000mb", extended: false }));
-app.use(cors({ origin: "*" }));
+app.use(cors("*"));
 
 app.use("/api/auth", auth);
 app.use("/api/admin", admin);
