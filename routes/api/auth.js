@@ -1,7 +1,5 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
-import { jwtDecode } from "jwt-decode";
 import { check, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import jwtSecret from "../../config/jwtSecret";
@@ -141,7 +139,7 @@ router.post(
           email: newUserData.email,
           isAdmin: newUserData.isAdmin,
           credit: newUserData.credit,
-          free_device:newUserData.free_device
+          free_device: newUserData.free_device,
         },
       };
 

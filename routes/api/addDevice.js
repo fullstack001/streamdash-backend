@@ -1,8 +1,9 @@
 import { Builder, By, Key, until, Select } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import * as cheerio from "cheerio";
-import { proxy } from "../../config/proxy.js";
 import express from "express";
+import jwt from "jsonwebtoken";
+import jwtSecret from "../../config/jwtSecret";
 import fs from "fs";
 
 import Device from "../../models/Device.js";
@@ -141,16 +142,15 @@ router.post("/", async (req, res) => {
       const user = await User.findOne({ email });
       user.credit = Number(user.credit) - Number(credit);
       await user.save();
-      const newUser = await User.findOne({ email });
       const payload = {
         user: {
-          name: newUser.name,
-          id: newUser._id,
-          email: newUser.email,
-          isAdmin: newUser.isAdmin,
-          credit: newUser.credit,
-          following: newUser.following,
-          free_device: newUserData.free_device,
+          name: user.name,
+          id: user._id,
+          email: user.email,
+          isAdmin: user.isAdmin,
+          credit: user.credit,
+          following: user.following,
+          free_device: user.free_device,
         },
       };
 
