@@ -156,7 +156,7 @@ router.post("/", async (req, res) => {
 
       jwt.sign(payload, jwtSecret, { expiresIn: "1 days" }, (err, token) => {
         if (err) throw err;
-        res.json({ token: token, data: rows });
+        res.json({ token: token, data: rows, userDevices: devices });
       });
     } else {
       res.json({ data: rows, userDevices: devices });
