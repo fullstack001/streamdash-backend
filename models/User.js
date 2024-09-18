@@ -25,8 +25,18 @@ const UserSchema = new mongoose.Schema({
   },
   free_device: {
     type: Number,
-    default:0
+    default: 0,
   },
+  validationCode: {
+    type: String,
+    required: false, // Optional until user signs up
+  },
+  isActive: {
+    type: Boolean,
+    default: false, // By default, new users are inactive until they verify their email
+  },
+  resetPasswordToken: String, // Token for resetting the password
+  resetPasswordExpires: Date, // Token expiration time
   date: {
     type: Date,
     default: Date.now,
