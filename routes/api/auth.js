@@ -8,6 +8,10 @@ import jwtSecret from "../../config/jwtSecret";
 
 import User from "../../models/User";
 import Credit from "../../models/Credit";
+import {
+  resetPasswordLink,
+  validationCodeContent,
+} from "../../config/mailtemplate";
 
 dotenv.config();
 
@@ -125,7 +129,7 @@ router.post("/signup", async (req, res) => {
       from: "no-reply@streamdash.co",
       to: email,
       subject: "Email Verification Code",
-      text: `Hi ${nameUser},\n\nYour verification code is: ${validationCode}\n\nPlease use this code to verify your account.\n`,
+      html: validationCodeContent(nameUser, validationCode),
     };
 
     mailgun.messages().send(emailData, (error, body) => {
@@ -268,17 +272,14 @@ router.post("/reset-password-request", async (req, res) => {
     await user.save();
 
     // Create reset URL
-    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    const htmlContent = resetPasswordLink(resetToken);
 
     // Mailgun email configuration
     const data = {
       from: "no-reply@yourdomain.com",
       to: user.email,
       subject: "Password Reset",
-      text: `You are receiving this email because you (or someone else) requested to reset the password for your account.\n\n
-      Please click on the following link, or paste it into your browser to complete the process:\n\n
-      ${resetUrl}\n\n
-      If you did not request this, please ignore this email and your password will remain unchanged.`,
+      html: htmlContent,
     };
 
     // Send the email
