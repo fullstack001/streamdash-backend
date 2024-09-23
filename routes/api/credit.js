@@ -23,10 +23,12 @@ const mailgun = mg({
 
 router.post("/buy-credit", async (req, res) => {
   const { email, credit } = req.body;
+  const today = new Date();
+  const formattedDate = today.toISOString().split("T")[0];
   console.log(
     email,
     credit,
-    Date.now().spilt("T")[0],
+    formattedDate,
     products.findOne((item) => item.credit === credit)["price"]
   );
   try {
@@ -50,7 +52,7 @@ router.post("/buy-credit", async (req, res) => {
     const htmlContent = purchaseEmainContent(
       user.name,
       credit,
-      Date.now().spilt("T")[0],
+      formattedDate,
       products.findOne((item) => item.credit === credit)["price"]
     );
 
