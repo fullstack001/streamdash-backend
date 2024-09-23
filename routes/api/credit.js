@@ -53,10 +53,10 @@ router.post("/buy-credit", async (req, res) => {
       user.name,
       credit,
       formattedDate,
-      products.findOne((item) => item.credit === credit)["price"]
+      products.find((item) => item.credit === credit)[0]["price"]
     );
 
-    // Mailgun email configuration
+    // Mailgun email configurations
     const data = {
       from: "support@yourdomain.com",
       to: user.email,
