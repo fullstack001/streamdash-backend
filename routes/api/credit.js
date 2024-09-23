@@ -29,7 +29,7 @@ router.post("/buy-credit", async (req, res) => {
     email,
     credit,
     formattedDate,
-    products.findOne((item) => item.credit === credit)["price"]
+    products.find((item) => item.credit === credit)[0]["price"]
   );
   try {
     const user = await User.findOne({ email });
