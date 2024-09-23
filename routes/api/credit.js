@@ -29,7 +29,7 @@ router.post("/buy-credit", async (req, res) => {
     email,
     credit,
     formattedDate,
-    products.find((item) => item.credit === credit)[0]["price"]
+    products.find((item) => Number(item.credit) === Number(credit))[0]["price"]
   );
   try {
     const user = await User.findOne({ email });
@@ -53,7 +53,9 @@ router.post("/buy-credit", async (req, res) => {
       user.name,
       credit,
       formattedDate,
-      products.find((item) => item.credit === credit)[0]["price"]
+      products.find((item) => Number(item.credit) === Number(credit))[0][
+        "price"
+      ]
     );
 
     // Mailgun email configurations
