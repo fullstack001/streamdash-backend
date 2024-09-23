@@ -22,15 +22,10 @@ const mailgun = mg({
 });
 
 router.post("/buy-credit", async (req, res) => {
-  const { email, credit } = req.body;
+  const { email, credit, price } = req.body;
   const today = new Date();
   const formattedDate = today.toISOString().split("T")[0];
-  console.log(
-    email,
-    credit,
-    formattedDate,
-    products.find((item) => Number(item.credit) === Number(credit))[0]["price"]
-  );
+  console.log(email, credit, formattedDate, price);
   try {
     const user = await User.findOne({ email });
 
@@ -53,9 +48,7 @@ router.post("/buy-credit", async (req, res) => {
       user.name,
       credit,
       formattedDate,
-      products.find((item) => Number(item.credit) === Number(credit))[0][
-        "price"
-      ]
+      price
     );
 
     // Mailgun email configurations
