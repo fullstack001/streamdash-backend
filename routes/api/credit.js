@@ -22,7 +22,9 @@ const mailgun = mg({
 });
 
 router.post("/buy-credit", async (req, res) => {
-  const { email, credit, price } = req.body;
+  const { email, credit } = req.body;
+  const product = products.find((item) => item.credit === Number(credit));
+  const price = product ? product.price : null;
   const today = new Date();
   const formattedDate = today.toISOString().split("T")[0];
   console.log(email, credit, formattedDate, price);
