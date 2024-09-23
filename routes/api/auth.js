@@ -11,6 +11,7 @@ import Credit from "../../models/Credit";
 import {
   resetPasswordLink,
   validationCodeContent,
+  trailContent,
 } from "../../config/mailtemplate";
 
 dotenv.config();
@@ -126,7 +127,7 @@ router.post("/signup", async (req, res) => {
 
     // Send validation code to user's email using Mailgun
     const emailData = {
-      from: "no-reply@streamdash.co",
+      from: "support@streamdash.co",
       to: email,
       subject: "Email Verification Code",
       html: validationCodeContent(nameUser, validationCode),
@@ -141,6 +142,38 @@ router.post("/signup", async (req, res) => {
       res.status(200).json({
         msg: "Signup successful. Verification code sent to your email.",
       });
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/signup-direct", async (req, res) => {
+  const { nameUser, email, password } = req.body;
+
+  try {
+    // Check if user already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: "exist" });
+    }
+
+    // Create new user but inactive until they validate their email
+    user = new User({
+      name: nameUser,
+      email: email,
+      password: password,
+      isActive: true, // Mark as inactive until email is validated
+    });
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+
+    res.status(200).json({
+      msg: "Signup successful.",
     });
   } catch (err) {
     console.error(err.message);
@@ -276,9 +309,9 @@ router.post("/reset-password-request", async (req, res) => {
 
     // Mailgun email configuration
     const data = {
-      from: "no-reply@yourdomain.com",
+      from: "support@yourdomain.com",
       to: user.email,
-      subject: "Password Reset",
+      subject: "StreamDash Password Reset Request",
       html: htmlContent,
     };
 
@@ -385,6 +418,39 @@ router.post("/add-user-by-admin", async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/try-free", async (req, res) => {
+  const { email } = req.body;
+  console.log(email);
+
+  try {
+    let user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: "No user found with this email" });
+    }
+    // Create reset URL
+    const htmlContent = trailContent(user.name);
+
+    // Mailgun email configuration
+    const data = {
+      from: "support@yourdomain.com",
+      to: user.email,
+      subject: "Your StreamDash Free Trial is Activated!",
+      html: htmlContent,
+    };
+
+    // Send the email
+    mailgun.messages().send(data, (error, body) => {
+      if (error) {
+        return res.status(500).json({ msg: "Failed to send email" });
+      }
+      res.json({ msg: "Email sent successfully" });
+    });
+  } catch (error) {
+    console.error(error.message);
     res.status(500).send("Server error");
   }
 });

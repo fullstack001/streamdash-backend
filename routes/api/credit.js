@@ -1,11 +1,34 @@
 import express from "express";
+import mg from "mailgun-js";
+import dotenv from "dotenv";
 import Credit from "../../models/Credit";
 import User from "../../models/User";
+import { purchaseEmainContent } from "../../config/mailtemplate";
+dotenv.config();
 
 const router = express.Router();
 
+const products = [
+  { credit: 1, price: 20 },
+  { credit: 6, price: 60 },
+  { credit: 12, price: 150 },
+  { credit: 50, price: 450 },
+];
+
+// Initialize Mailgun
+const mailgun = mg({
+  apiKey: process.env.MAILGUN_API_KEY,
+  domain: process.env.MAILGUN_DOMAIN,
+});
+
 router.post("/buy-credit", async (req, res) => {
   const { email, credit } = req.body;
+  console.log(
+    email,
+    credit,
+    Date.now().spilt("T")[0],
+    products.findOne((item) => item.credit === credit)["price"]
+  );
   try {
     const user = await User.findOne({ email });
 
@@ -24,7 +47,28 @@ router.post("/buy-credit", async (req, res) => {
     });
     await newCredit.save();
 
-    res.json({ msg: "Success" });
+    const htmlContent = purchaseEmainContent(
+      user.name,
+      credit,
+      Date.now().spilt("T")[0],
+      products.findOne((item) => item.credit === credit)["price"]
+    );
+
+    // Mailgun email configuration
+    const data = {
+      from: "support@yourdomain.com",
+      to: user.email,
+      subject: "Your StreamDash Credit Purchase is Confirmed!",
+      html: htmlContent,
+    };
+
+    // Send the email
+    mailgun.messages().send(data, (error, body) => {
+      if (error) {
+        return res.status(500).json({ msg: "Failed to send email" });
+      }
+      res.json({ msg: "Email sent successfully" });
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Error processing request" });
