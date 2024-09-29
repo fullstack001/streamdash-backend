@@ -47,7 +47,7 @@ router.post("/buy-credit", async (req, res) => {
     await newCredit.save();
 
     const htmlContent = purchaseEmainContent(
-      user.name,
+      user.email,
       credit,
       formattedDate,
       price

@@ -113,7 +113,7 @@ router.post("/signup", async (req, res) => {
     // Create new user but inactive until they validate their email
     const validationCode = `${Math.floor(100000 + Math.random() * 900000)}`;
     user = new User({
-      name: nameUser,
+      name: nameUser || "",
       email: email,
       password: password,
       validationCode,
@@ -391,7 +391,7 @@ router.post("/add-credit-by-admin", async (req, res) => {
 });
 
 router.post("/add-user-by-admin", async (req, res) => {
-  const { userName, email, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     // Check if user already exists
@@ -402,7 +402,6 @@ router.post("/add-user-by-admin", async (req, res) => {
 
     // Create new user but inactive until they validate their email
     user = new User({
-      name: userName,
       email: email,
       password: password,
       isActive: true, // Mark as inactive until email is validated
@@ -432,7 +431,7 @@ router.post("/try-free", async (req, res) => {
       return res.status(400).json({ msg: "No user found with this email" });
     }
     // Create reset URL
-    const htmlContent = trailContent(user.name);
+    const htmlContent = trailContent(user.email);
 
     // Mailgun email configuration
     const data = {
@@ -452,6 +451,61 @@ router.post("/try-free", async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server error");
+  }
+});
+
+router.post("/update-profile", async (req, res) => {
+  const { email, name } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    user.name = name || user.name;
+    await user.save();
+    res.status(200).json({ msg: "Profile updated successfully", user });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/update-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({ msg: "Password updated successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server error");
+  }
+});
+
+// @route    DELETE api/auth/delete-user/:id
+// @desc     Delete user by ID
+// @access   Private (You can make this restricted to admins or authenticated users)
+router.post("/delete-user", async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id);
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ msg: "User deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ msg: "Server error" });
   }
 });
 
