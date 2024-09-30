@@ -65,11 +65,11 @@ router.post("/signin", async (req, res) => {
 
 router.post("/getUserData", async (req, res) => {
   try {
+    console.log(req.body.email);
     const newUserData = await User.findOne({ email: req.body.email });
     const payload = {
       user: {
-        name: newUserData.name,
-        id: newUserData._id,
+        id: newUserData.MAILGUN_API_KEYid,
         email: newUserData.email,
         isAdmin: newUserData.isAdmin,
         credit: newUserData.credit,
@@ -81,6 +81,17 @@ router.post("/getUserData", async (req, res) => {
       if (err) throw err;
       res.json({ token });
     });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/getUserpayment", async (req, res) => {
+  try {
+    const newUserData = await User.findOne({ email: req.body.email });
+
+    res.json(newUserData.credit > 0);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -492,15 +503,17 @@ router.post("/update-password", async (req, res) => {
 // @desc     Delete user by ID
 // @access   Private (You can make this restricted to admins or authenticated users)
 router.post("/delete-user", async (req, res) => {
+  console.log(req.body.id);
   try {
     const user = await User.findById(req.body.id);
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
 
     // Delete the user
-    await User.findByIdAndDelete(req.params.id);
+    await User.findByIdAndDelete(req.body.id);
 
     res.status(200).json({ msg: "User deleted successfully" });
   } catch (error) {
