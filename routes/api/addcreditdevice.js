@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
     const newCredit = new Credit({
       email: email,
       credit: credits,
-      action: "Add to device",
+      action: "Add Credit to device",
       userId: id,
     });
 

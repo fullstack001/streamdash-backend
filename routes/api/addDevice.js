@@ -8,6 +8,7 @@ import fs from "fs";
 
 import Device from "../../models/Device.js";
 import User from "../../models/User.js";
+import Credit from "../../models/Credit.js";
 
 const router = express.Router();
 
@@ -141,6 +142,16 @@ router.post("/", async (req, res) => {
     if (credit > 0) {
       const user = await User.findOne({ email });
       user.credit = Number(user.credit) - Number(credit);
+
+      const newCredit = new Credit({
+        email: email,
+        credit: credits,
+        action: "Add device with credit.",
+        userId: id,
+      });
+
+      await newCredit.save();
+
       await user.save();
       const payload = {
         user: {

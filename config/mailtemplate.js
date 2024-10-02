@@ -26,7 +26,7 @@ const style = `<style>
                     text-align: center;
                     text-decoration: none;
                     outline: none;
-                    color: #ffffff;
+                    color: white;
                     background-color: #007bff;
                     border: none;
                     border-radius: 5px;
@@ -39,6 +39,9 @@ const style = `<style>
                     background-color: #0069d9;
                     box-shadow: 0 2px #666;
                     transform: translateY(2px);
+                }
+                a {
+                    color:white
                 }
 
                 p {

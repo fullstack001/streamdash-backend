@@ -323,7 +323,7 @@ router.post("/reset-password-request", async (req, res) => {
     const data = {
       from: "support@streamdash.co",
       to: user.email,
-      subject: "StreamDash Password Reset Request",
+      subject: "Streamdash Password Reset Request",
       html: htmlContent,
     };
 
@@ -451,7 +451,7 @@ router.post("/try-free", async (req, res) => {
     const data = {
       from: "support@streamdash.co",
       to: user.email,
-      subject: "Your StreamDash Free Trial is Activated!",
+      subject: "Your Streamdash Free Trial is Activated!",
       html: htmlContent,
     };
 
