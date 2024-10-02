@@ -55,7 +55,7 @@ router.post("/buy-credit", async (req, res) => {
 
     // Mailgun email configurations
     const data = {
-      from: "support@yourdomain.com",
+      from: "support@streamdash.co",
       to: user.email,
       subject: "Your StreamDash Credit Purchase is Confirmed!",
       html: htmlContent,

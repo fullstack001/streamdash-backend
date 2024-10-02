@@ -16,6 +16,9 @@ import addCreditDevice from "./routes/api/addcreditdevice";
 import payment from "./routes/api/payment";
 import credit from "./routes/api/credit";
 import notification from "./routes/api/notification";
+import fac from "./routes/api/fac";
+import promotion from "./routes/api/promotion";
+import footer from "./routes/api/footer";
 
 dotenv.config();
 
@@ -23,7 +26,6 @@ const app = express();
 
 connectDB();
 createAdmin();
-// saveData();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: "2000mb", extended: false }));
@@ -39,6 +41,9 @@ app.use("/api/add-credit-device", addCreditDevice);
 app.use("/api/payment", payment);
 app.use("/api/credit", credit);
 app.use("/api/notification", notification);
+app.use("/api/facs", fac);
+app.use("/api/promotion", promotion);
+app.use("/api/footer", footer);
 
 // // Serve the form
 app.get("/", (req, res) => {

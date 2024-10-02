@@ -12,6 +12,7 @@ import {
   resetPasswordLink,
   validationCodeContent,
   trailContent,
+  changeEmailContent,
 } from "../../config/mailtemplate";
 
 dotenv.config();
@@ -320,7 +321,7 @@ router.post("/reset-password-request", async (req, res) => {
 
     // Mailgun email configuration
     const data = {
-      from: "support@yourdomain.com",
+      from: "support@streamdash.co",
       to: user.email,
       subject: "StreamDash Password Reset Request",
       html: htmlContent,
@@ -441,12 +442,14 @@ router.post("/try-free", async (req, res) => {
     if (!user) {
       return res.status(400).json({ msg: "No user found with this email" });
     }
+    user.free_device = 1;
+    await user.save();
     // Create reset URL
     const htmlContent = trailContent(user.email);
 
     // Mailgun email configuration
     const data = {
-      from: "support@yourdomain.com",
+      from: "support@streamdash.co",
       to: user.email,
       subject: "Your StreamDash Free Trial is Activated!",
       html: htmlContent,
@@ -466,15 +469,39 @@ router.post("/try-free", async (req, res) => {
 });
 
 router.post("/update-profile", async (req, res) => {
-  const { email, name } = req.body;
+  const { email, oldEmail } = req.body;
   try {
-    const user = await User.findOne({ email });
-    user.name = name || user.name;
+    let userCheck = await User.findOne({ email });
+    if (userCheck) {
+      return res.status(400).json({ msg: "exist" });
+    }
+
+    const user = await User.findOne({ oldEmail });
+    user.email = email || user.email;
     await user.save();
+
+    // Create reset URL
+    const htmlContent = changeEmailContent(email);
+
+    // Mailgun email configuration
+    const data = {
+      from: "support@streamdash.co",
+      to: user.email,
+      subject: "Email Address Successfully Updated",
+      html: htmlContent,
+    };
+
+    // Send the email
+    mailgun.messages().send(data, (error, body) => {
+      if (error) {
+        return res.status(500).json({ msg: "Failed to send email" });
+      }
+      res.json({ msg: "Reset link sent to your email" });
+    });
     res.status(200).json({ msg: "Profile updated successfully", user });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server error");
+    res.status(500).send({ msg: "Server error" });
   }
 });
 
