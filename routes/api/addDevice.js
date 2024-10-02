@@ -159,7 +159,7 @@ router.post("/", async (req, res) => {
           id: user._id,
           email: user.email,
           isAdmin: user.isAdmin,
-          credit: user.credit,
+          credit: Number(user.credit) - Number(credit),
           following: user.following,
           free_device: user.free_device,
         },
