@@ -51,6 +51,7 @@ router.post("/signin", async (req, res) => {
         isAdmin: user.isAdmin,
         credit: user.credit,
         following: user.following,
+        free_device: user.free_device,
       },
     };
 
@@ -323,7 +324,7 @@ router.post("/reset-password-request", async (req, res) => {
     const data = {
       from: "support@streamdash.co",
       to: user.email,
-      subject: "Streamdash Password Reset Request",
+      subject: "streamdash Password Reset Request",
       html: htmlContent,
     };
 
@@ -382,7 +383,7 @@ router.post("/add-credit-by-admin", async (req, res) => {
     }
 
     user.credit = (Number(user.credit) || 0) + Number(credit);
-    user.free_device = 1;
+    user.free_device = 0;
     await user.save();
 
     const newCredit = new Credit({
@@ -451,16 +452,32 @@ router.post("/try-free", async (req, res) => {
     const data = {
       from: "support@streamdash.co",
       to: user.email,
-      subject: "Your Streamdash Free Trial is Activated!",
+      subject: "Your streamdash Free Trial is Activated!",
       html: htmlContent,
     };
 
     // Send the email
-    mailgun.messages().send(data, (error, body) => {
+    mailgun.messages().send(data, async (error, body) => {
       if (error) {
         return res.status(500).json({ msg: "Failed to send email" });
       }
-      res.json({ msg: "Email sent successfully" });
+      const newUserData = await User.findOne({ email });
+
+      const payload = {
+        user: {
+          name: newUserData.name,
+          id: newUserData._id,
+          email: newUserData.email,
+          isAdmin: newUserData.isAdmin,
+          credit: newUserData.credit,
+          free_device: newUserData.free_device,
+        },
+      };
+
+      jwt.sign(payload, jwtSecret, { expiresIn: "1 days" }, (err, token) => {
+        if (err) throw err;
+        res.status(200).json({ token });
+      });
     });
   } catch (error) {
     console.error(error.message);

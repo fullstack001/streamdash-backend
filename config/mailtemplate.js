@@ -26,11 +26,14 @@ const style = `<style>
                     text-align: center;
                     text-decoration: none;
                     outline: none;
-                    color: white;
+                    color: #fff !important;
                     background-color: #007bff;
                     border: none;
                     border-radius: 5px;
                     box-shadow: 0 4px #999;
+                }
+                .ii a[href] {
+                    color: #fff;
                 }
 
                 .button:hover {background-color: #0069d9}
@@ -41,7 +44,7 @@ const style = `<style>
                     transform: translateY(2px);
                 }
                 a {
-                    color:white
+                    color:#fff
                 }
 
                 p {

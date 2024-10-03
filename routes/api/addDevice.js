@@ -140,14 +140,13 @@ router.post("/", async (req, res) => {
     const devices = await Device.find({ email });
 
     if (credit > 0) {
-      const user = await User.findOne({ email });
+      let user = await User.findOne({ email });
       user.credit = Number(user.credit) - Number(credit);
 
       const newCredit = new Credit({
         email: email,
         credit: credit,
         action: "Add device with credit.",
-        userId: id,
       });
 
       await newCredit.save();
@@ -170,6 +169,9 @@ router.post("/", async (req, res) => {
         res.json({ token: token, data: rows, userDevices: devices });
       });
     } else {
+      let user = await User.findOne({ email });
+      user.free_device = 2;
+      await user.save();
       res.json({ data: rows, userDevices: devices });
     }
   } catch (error) {
