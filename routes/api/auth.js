@@ -13,6 +13,7 @@ import {
   validationCodeContent,
   trailContent,
   changeEmailContent,
+  validationOPTContent,
 } from "../../config/mailtemplate";
 
 dotenv.config();
@@ -140,7 +141,7 @@ router.post("/signup", async (req, res) => {
 
     // Send validation code to user's email using Mailgun
     const emailData = {
-      from: "support@streamdash.co",
+      from: "streamdash<support@streamdash.co>",
       to: email,
       subject: "Email Verification Code",
       html: validationCodeContent(nameUser, validationCode),
@@ -234,8 +235,6 @@ router.post("/verify-email", async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // @route    POST api/auth/changeuser
 // @desc     change user data
 // @access   Private
@@ -322,7 +321,7 @@ router.post("/reset-password-request", async (req, res) => {
 
     // Mailgun email configuration
     const data = {
-      from: "support@streamdash.co",
+      from: "streamdash<support@streamdash.co>",
       to: user.email,
       subject: "streamdash Password Reset Request",
       html: htmlContent,
@@ -450,7 +449,7 @@ router.post("/try-free", async (req, res) => {
 
     // Mailgun email configuration
     const data = {
-      from: "support@streamdash.co",
+      from: "streamdash<support@streamdash.co>",
       to: user.email,
       subject: "Your streamdash Free Trial is Activated!",
       html: htmlContent,
@@ -487,38 +486,98 @@ router.post("/try-free", async (req, res) => {
 
 router.post("/update-profile", async (req, res) => {
   const { email, oldEmail } = req.body;
+  console.log(email, oldEmail);
+
   try {
+    // Check if the new email already exists in the database
     let userCheck = await User.findOne({ email });
     if (userCheck) {
-      return res.status(400).json({ msg: "exist" });
+      return res.status(400).json({ msg: "Email already exists" });
     }
 
-    const user = await User.findOne({ oldEmail });
-    user.email = email || user.email;
+    // Find the user by the old email
+    let user = await User.findOne({ email: oldEmail });
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Generate a random 6-digit validation code
+    const validationCode = `${Math.floor(100000 + Math.random() * 900000)}`;
+    console.log(validationCode); // For debugging purposes
+
+    // Save validation code to the user object
+    user.validationCode = validationCode;
     await user.save();
 
-    // Create reset URL
-    const htmlContent = changeEmailContent(email);
-
-    // Mailgun email configuration
-    const data = {
-      from: "support@streamdash.co",
-      to: user.email,
-      subject: "Email Address Successfully Updated",
-      html: htmlContent,
+    // Send the validation code to the user's new email using Mailgun
+    const emailData = {
+      from: "streamdash<support@streamdash.co>",
+      to: email,
+      subject: "Confirm Your Email Address Change - Action Required",
+      html: validationOPTContent(validationCode), // Make sure this function is properly defined
     };
 
-    // Send the email
-    mailgun.messages().send(data, (error, body) => {
-      if (error) {
-        return res.status(500).json({ msg: "Failed to send email" });
-      }
-      res.json({ msg: "Reset link sent to your email" });
+    // Use async/await with Mailgun to handle the email sending process
+    await mailgun.messages().send(emailData);
+
+    // Send success response
+    res.status(200).json({
+      msg: "Profile update successful. Verification code sent to your new email.",
     });
-    res.status(200).json({ msg: "Profile updated successfully", user });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send({ msg: "Server error" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+router.post("/verify-opt", async (req, res) => {
+  const { email, newEmail, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    console.log(Number(user.validationCode), Number(otp));
+    if (Number(user.validationCode) != Number(otp)) {
+      return res.status(400).json({ msg: "Invalid code" });
+    }
+
+    user.email = newEmail;
+    // Activate the user
+    user.isActive = true;
+    user.validationCode = undefined; // Clear the validation code
+    await user.save();
+
+    const payload = {
+      user: {
+        id: user._id,
+        email: newEmail,
+        isAdmin: user.isAdmin,
+        credit: user.credit,
+        free_device: user.free_device,
+      },
+    };
+
+    // Send validation code to user's email using Mailgun
+    const emailData = {
+      from: "streamdash<support@streamdash.co>",
+      to: newEmail,
+      subject: "Email Address Successfully Updated",
+      html: changeEmailContent(newEmail),
+    };
+
+    mailgun.messages().send(emailData, (error, body) => {
+      if (error) {
+        return res
+          .status(500)
+          .json({ msg: "Failed to send verification email" });
+      }
+      jwt.sign(payload, jwtSecret, { expiresIn: "1 days" }, (err, token) => {
+        if (err) throw err;
+        res.status(200).json({ token });
+      });
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
   }
 });
 

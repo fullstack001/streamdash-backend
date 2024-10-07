@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
     default: 0,
   },
   validationCode: {
-    type: String,
+    type: Number,
     required: false, // Optional until user signs up
   },
   isActive: {

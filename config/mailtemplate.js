@@ -107,6 +107,29 @@ export function validationCodeContent(userName, code) {
             </body>
             </html>`;
 }
+
+export function validationOPTContent(code) {
+  return `<!DOCTYPE html>
+            <html>
+            <head>
+                ${style}
+            </head>
+            <body>
+                <div class="email-container">
+                    <p>Dear User,</p>
+                    <p>We've received a request to update the email address associated with your StreamDash account. </p>
+                    <p>To ensure the security of your account, please verify your new email address by entering the One-Time Password (OTP) below:</p>
+                    <div class="button">${code}</div>
+                    <p>Please enter this code in the verification field within the next 10 minutes to confirm the email change.</p>
+                    <p>If you did not request this change, please contact our support team immediately to secure your account. </p>
+                    <p>Thank you for being a part of StreamDash!</p>
+                    <p>Stay streaming,<br>
+                    streamdash Support Team</p>
+                </div>
+            </body>
+            </html>`;
+}
+
 export function purchaseEmainContent(userName, credit, date, amount) {
   return `<!DOCTYPE html>
             <html>
@@ -167,7 +190,7 @@ export function changeEmailContent(email) {
                     <p>Dear User,</p>
                     <p>We wanted to let you know that your email address has been successfully updated on streamdash.</p>
                     <p> From now on, all account-related communications will be sent to your new email address: </p>
-                    <div class="button">${email}</div>
+                    <p>${email}<p>
                     <p>If you didn’t request this change, please contact our support team immediately to secure your account.</p>
                     <p>Thank you for being a part of streamdash! </p>
                     <p>Stay streaming!<br>

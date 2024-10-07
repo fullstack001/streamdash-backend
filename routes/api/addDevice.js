@@ -142,6 +142,7 @@ router.post("/", async (req, res) => {
     if (credit > 0) {
       let user = await User.findOne({ email });
       user.credit = Number(user.credit) - Number(credit);
+      await user.save();
 
       const newCredit = new Credit({
         email: email,
@@ -151,7 +152,6 @@ router.post("/", async (req, res) => {
 
       await newCredit.save();
 
-      await user.save();
       const payload = {
         user: {
           name: user.name,

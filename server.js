@@ -19,6 +19,7 @@ import notification from "./routes/api/notification";
 import fac from "./routes/api/fac";
 import promotion from "./routes/api/promotion";
 import footer from "./routes/api/footer";
+import product from "./routes/api/product";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/api/notification", notification);
 app.use("/api/facs", fac);
 app.use("/api/promotion", promotion);
 app.use("/api/footer", footer);
+app.use("/api/product", product);
 
 // // Serve the form
 app.get("/", (req, res) => {
