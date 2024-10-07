@@ -5,7 +5,9 @@ const ProductSchema = new mongoose.Schema({
   id: { type: String, require: true },
   priceCAD: { type: Number },
   priceUSD: { type: Number },
-
+  discount: { type: Number },
+  couponCode: { type: String },
+  couponActive: { type: Boolean, default: false },
   date: { type: Date, default: Date.now },
 });
 
