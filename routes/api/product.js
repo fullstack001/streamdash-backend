@@ -53,9 +53,9 @@ router.get("/coupon-show/:id", async (req, res) => {
 });
 
 router.post("/apply-coupon", async (req, res) => {
-  const { productId, couponCode } = req.body;
+  const { couponCode } = req.body;
   try {
-    const product = await Product.findById(productId);
+    const product = await Product.findOne({ couponCode: couponCode });
     if (!product) {
       return res.status(404).json({ msg: "Product not found" });
     }
