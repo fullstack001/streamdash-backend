@@ -5,10 +5,15 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import jwtSecret from "../../config/jwtSecret";
 import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
 
 import Device from "../../models/Device.js";
 import User from "../../models/User.js";
 import Credit from "../../models/Credit.js";
+
+const USER_NAME = process.env.USER_NAME;
+const PASSWORD = process.env.PASSWORD;
 
 const router = express.Router();
 
@@ -34,10 +39,10 @@ router.post("/", async (req, res) => {
   try {
     // Login to the website
     await driver.get("https://billing.nexatv.live/login");
-    await driver.findElement(By.name("login")).sendKeys("vrushankshah");
+    await driver.findElement(By.name("login")).sendKeys(USER_NAME);
     await driver
       .findElement(By.name("password"))
-      .sendKeys("vrushankshah", Key.RETURN);
+      .sendKeys(PASSWORD, Key.RETURN);
 
     await sleep(5000);
 

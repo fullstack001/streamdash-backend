@@ -3,6 +3,11 @@ import chrome from "selenium-webdriver/chrome.js";
 import * as cheerio from "cheerio";
 import { proxy } from "../../config/proxy.js";
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
+const USER_NAME = process.env.USER_NAME;
+const PASSWORD = process.env.PASSWORD;
 
 const router = express.Router();
 
@@ -32,10 +37,10 @@ router.post("/", async (req, res) => {
     // Login to the website
     await driver.get("https://billing.nexatv.live/login");
     await sleep(1000);
-    await driver.findElement(By.name("login")).sendKeys("vrushankshah");
+    await driver.findElement(By.name("login")).sendKeys(USER_NAME);
     await driver
       .findElement(By.name("password"))
-      .sendKeys("vrushankshah", Key.RETURN);
+      .sendKeys(PASSWORD, Key.RETURN);
 
     // Wait for the modal to appear and click the 'OK' button
     await driver.wait(

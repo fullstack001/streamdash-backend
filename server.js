@@ -2,6 +2,7 @@ import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from 'path';
 
 import connectDB from "./config/database";
 import createAdmin from "./config/createAdmin";
@@ -46,6 +47,12 @@ app.use("/api/facs", fac);
 app.use("/api/promotion", promotion);
 app.use("/api/footer", footer);
 app.use("/api/product", product);
+
+// Add this new route for the meta image
+app.get('/meta-image/image.png', (req, res) => {
+  const imagePath = path.join(__dirname, 'image.png');
+  res.sendFile(imagePath);
+});
 
 // // Serve the form
 app.get("/", (req, res) => {

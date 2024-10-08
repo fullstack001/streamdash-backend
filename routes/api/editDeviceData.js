@@ -2,6 +2,11 @@ import { Builder, By, Key, until } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import express from "express";
 import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
+
+const USER_NAME = process.env.USER_NAME;
+const PASSWORD = process.env.PASSWORD;
 
 import Device from "../../models/Device.js";
 
@@ -29,10 +34,10 @@ router.post("/", async (req, res) => {
   try {
     // Login to the website
     await driver.get("https://billing.nexatv.live/login");
-    await driver.findElement(By.name("login")).sendKeys("vrushankshah");
+    await driver.findElement(By.name("login")).sendKeys(USER_NAME);
     await driver
       .findElement(By.name("password"))
-      .sendKeys("vrushankshah", Key.RETURN);
+      .sendKeys(PASSWORD, Key.RETURN);
 
     await sleep(5000);
 

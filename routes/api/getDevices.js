@@ -2,6 +2,11 @@ import { Builder, By, Key, until, Select } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import * as cheerio from "cheerio";
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
+const USER_NAME = process.env.USER_NAME;
+const PASSWORD = process.env.PASSWORD;
 
 const router = express.Router();
 import Device from "../../models/Device";
@@ -23,10 +28,10 @@ router.post("/", async (req, res) => {
   try {
     // Login to the website
     await driver.get("https://billing.nexatv.live/login");
-    await driver.findElement(By.name("login")).sendKeys("vrushankshah");
+    await driver.findElement(By.name("login")).sendKeys(USER_NAME);
     await driver
       .findElement(By.name("password"))
-      .sendKeys("vrushankshah", Key.RETURN);
+      .sendKeys(PASSWORD, Key.RETURN);
 
     // Wait for the modal to appear and check if the button is interactable
     const modalButton = await driver.wait(
