@@ -4,8 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from 'path';
 
+import './config/globals';  // Import globals first
 import connectDB from "./config/database";
 import createAdmin from "./config/createAdmin";
+import startDataFetcher from "./config/dataFetcher";
 
 import auth from "./routes/api/auth";
 import admin from "./routes/api/admin";
@@ -28,6 +30,7 @@ const app = express();
 
 connectDB();
 createAdmin();
+startDataFetcher(); // Start the data fetcher
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: "2000mb", extended: false }));
