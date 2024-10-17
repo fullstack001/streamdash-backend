@@ -19,7 +19,9 @@ router.post("/", async (req, res) => {
       ? await Device.find()
       : await Device.find({ email });
 
-    res.json({ data: data, userDevice: userDevice });
+   const assignedDevices = await Device.find();
+
+    res.json({ data: data, userDevice: userDevice, assignedDevices });
   } catch (error) {
     console.error(error);
     res.status(402).json({ error: "get Data Error" });

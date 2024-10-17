@@ -14,6 +14,7 @@ import {
   trailContent,
   changeEmailContent,
   validationOPTContent,
+  setPasswordContent
 } from "../../config/mailtemplate";
 
 dotenv.config();
@@ -403,7 +404,7 @@ router.post("/add-credit-by-admin", async (req, res) => {
 });
 
 router.post("/add-user-by-admin", async (req, res) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
 
   try {
     // Check if user already exists
@@ -415,18 +416,39 @@ router.post("/add-user-by-admin", async (req, res) => {
     // Create new user but inactive until they validate their email
     user = new User({
       email: email,
-      password: password,
-      isActive: true, // Mark as inactive until email is validated
+      password:"1234567890",
+      isActive: false, // Mark as inactive until email is validated
     });
+    const setToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpire = Date.now() + 3600000; // 1 hour from now
 
+    user.resetPasswordToken = setToken;
+    user.resetPasswordExpires = resetTokenExpire;
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    user.password = await bcrypt.hash("123456789", salt);
     await user.save();
     const users = await User.find();
-    res.status(200).json({
-      data: users,
+    const htmlContent = setPasswordContent(setToken);
+
+    // Mailgun email configuration
+    const data = {
+      from: "streamdash<support@streamdash.co>",
+      to: email,
+      subject: "Welcome to streamdash! Set Up Your Account Today",
+      html: htmlContent,
+    };
+
+    // Send the email
+    mailgun.messages().send(data, (error, body) => {
+      if (error) {
+        return res.status(500).json({ msg: "Failed to send email" });
+      }
+      res.json({
+        data: users,
+      });
     });
+   
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -593,6 +615,7 @@ router.post("/update-password", async (req, res) => {
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
+    user.isActive = true;
     await user.save();
 
     res.status(200).json({ msg: "Password updated successfully" });

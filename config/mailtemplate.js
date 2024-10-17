@@ -70,7 +70,7 @@ export function resetPasswordLink(token) {
                     <p>We received a request to reset your streamdash account password. If you made this request, please click the link below to reset your password:</p>
                     <a href="${resetLink}" class="button">Reset Password</a>
                     <p>For your security, this link will expire in 24 hours. If you didn’t request a password reset, you can safely ignore this email—your account will remain secure.</p>
-                    <p>If you need further assistance, don’t hesitate to contact us at support@streamdash.com.</p>
+                    <p>If you need further assistance, don’t hesitate to contact us at support@streamdash.co.</p>
                     <p>Stay streaming!  <br>
                     The streamdash Team</p>
                     <p>---</p>
@@ -99,7 +99,7 @@ export function validationCodeContent(userName, code) {
                      <li>Latest TV shows and movies</li>
                     </ul>
                     <p>If you have any questions, feel free to reach out to our support team at </p>
-                    <p>support@streamdash.com. </p>
+                    <p>support@streamdash.co. </p>
                     <p>Looking forward to streaming with you!</p>
                     <p>Best wishes,<br>
                     streamdash Support Team</p>
@@ -148,7 +148,7 @@ export function purchaseEmainContent(userName, credit, date, amount) {
                     <p>To start using your credits, simply log in to your account: </p>
                               <a href="https://streamdash.co/login" class="button">Log In to streamdash</a>
                     <p>If you have any questions or need assistance, our support team is here to help at  </p>
-                    <p>support@streamdash.com. </p>
+                    <p>support@streamdash.co. </p>
                     <p>Looking forward to streaming with you!</p>
                     <p>Happy streaming!  ,<br>
                     The streamdash Team</p>
@@ -171,7 +171,7 @@ export function trailContent(userName) {
                     <a href="https://streamdash.co/login" class="button">Log In to streamdash</a>
                     <p>Remember, your trial will automatically expire after 2 days of adding the device. </p>
                     <p>If you need any help or have questions, contact us at  </p>
-                    <p>support@streamdash.com. </p>
+                    <p>support@streamdash.co. </p>
                     <p>Enjoy your streamdash experience! <br>
                     The streamdash Team</p>
                 </div>
@@ -195,6 +195,27 @@ export function changeEmailContent(email) {
                     <p>Thank you for being a part of streamdash! </p>
                     <p>Stay streaming!<br>
                     The streamdash Team</p>
+                </div>
+            </body>
+            </html>`;
+}
+
+export function setPasswordContent(token) {
+  const resetLink = `https://streamdash.co/set-password/${token}`;
+  return `<!DOCTYPE html>
+            <html>
+            <head>
+                ${style}
+            </head>
+            <body>  
+                <div class="email-container">
+                    <p>Welcome to streamdash—your go-to platform to manage IPTV devices! We're excited to have you on board. To get started and unlock all the powerful features streamdash has to offer, please take a moment to set up your account.</p>
+                    <p>Here's how to get started:</p>
+                    <a href="${resetLink}" class="button">Activate Your Account</a>
+                    <p>If a device has been added to your account, you can start managing it. Or you can add the devices yourself.</p>
+                    <p>If you have any questions, feel free to reach out to our support team at support@streamdash.co.</p>
+                    <p>Happy streaming! <br>
+                    The streamdashTeam</p>
                 </div>
             </body>
             </html>`;

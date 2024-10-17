@@ -23,7 +23,7 @@ import fac from "./routes/api/fac";
 import promotion from "./routes/api/promotion";
 import footer from "./routes/api/footer";
 import product from "./routes/api/product";
-
+import assignDevice from "./routes/api/assignDevice";
 dotenv.config();
 
 const app = express();
@@ -50,25 +50,13 @@ app.use("/api/facs", fac);
 app.use("/api/promotion", promotion);
 app.use("/api/footer", footer);
 app.use("/api/product", product);
-
+app.use("/api/assign-device", assignDevice);
 // Add this new route for the meta image
 app.get('/meta-image/image.png', (req, res) => {
   const imagePath = path.join(__dirname, 'image.png');
   res.sendFile(imagePath);
 });
 
-// // Serve the form
-app.get("/", (req, res) => {
-  res.send(`
-        <form action="/submit" method="post">
-            Name: <input type="text" name="name"><br>
-            Username: <input type="text" name="username"><br>
-            Password: <input type="password" name="password"><br>
-            MAC: <input type="text" name="mac"><br>
-            <input type="submit" value="Submit">
-        </form>
-    `);
-});
 const port = process.env.PORT || 5033;
 app.listen(port, () => {
   console.log(`Server is running on port:${port}`);
