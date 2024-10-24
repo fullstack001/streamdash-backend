@@ -13,7 +13,7 @@ const router = express.Router();
 
 function calculateExpiryDate(credit) {
   const now = new Date();
-  const expiryDate = new Date(now.setMonth(now.getMonth() + credit)); // 'credit' months from now
+  const  expiryDate = new Date(now.getFullYear(), now.getMonth() + Number(credit), now.getDate()); // 'credit' months from now
 
   return expiryDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 }
@@ -22,7 +22,7 @@ function calculateExpiryDate(credit) {
 router.post("/", async (req, res) => {
   const { id, email, credits } = req.body; 
   try {
-    await addCreditToDevice(id, credits);
+    addCreditToDevice(id, credits);
     const expiryDate = calculateExpiryDate(credits);
     const data =await updateExpiry(id, expiryDate);
     const newCredit = new Credit({
@@ -57,9 +57,7 @@ router.post("/", async (req, res) => {
     console.error("Error:", error);
 
     res.status(402).json("Failed to submit the form or fetch data.");
-  } finally {
-    await driver.quit();
-  }
+  } 
 });
 
 

@@ -20,7 +20,7 @@ function calculateExpiryDate(credit) {
   if (credit < 1) {
     expiryDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
   } else {
-    expiryDate = new Date(now.setMonth(now.getMonth() + credit)); // 'credit' months from now
+    expiryDate = new Date(now.getFullYear(), now.getMonth() + Number(credit), now.getDate()); // 'credit' months from now
   }
 
   return expiryDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
   const { email, name, username, password, mac, credit } = req.body;
  
   try {
-    await addDevice(name, username, password, mac, credit);
+    addDevice(name, username, password, mac, credit);
    
     const expiryDate = calculateExpiryDate(credit);
     const newDevicdData = {

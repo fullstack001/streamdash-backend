@@ -51,6 +51,7 @@ export default async function addCreditToDevice(id,  credits) {
             )
         );
         await submitButton.click();
+        console.log("Credit added to device");
     }catch(error){
         console.error(error);
     }finally{

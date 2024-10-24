@@ -74,7 +74,7 @@ export default async function editDevice(id, name, password, mac) {
       )
     );
     await submitButton.click();
-
+    console.log("Device edited");
     // Wait for a few seconds to ensure the form is submitted
     await sleep(5000);
   } catch (error) {

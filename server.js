@@ -29,7 +29,7 @@ dotenv.config();
 const app = express();
 
 connectDB();
-createAdmin();
+// createAdmin();
 startDataFetcher(); // Start the data fetcher
 
 app.use(bodyParser.json());
